@@ -1,1 +1,1 @@
-# Smart Traffic Signal Automation System
+# AI-based Customer Support Automation Platform
