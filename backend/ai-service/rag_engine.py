@@ -4,9 +4,17 @@ Based on LangChain approach - uses Google's embedding model directly
 No external model downloads needed - uses same API key as Gemini
 """
 
+# Fix SQLite3 version for ChromaDB on Azure App Service
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
 import os
@@ -18,8 +26,11 @@ from typing import List, Dict, Tuple
 # Load environment variables
 load_dotenv()
 
-# Persistent ChromaDB directory
-CHROMA_PERSIST_DIR = os.path.join(os.path.dirname(__file__), ".chromadb")
+# Persistent ChromaDB directory - use /home on Azure App Service (writable)
+if os.environ.get("WEBSITE_SITE_NAME"):  # Running on Azure
+    CHROMA_PERSIST_DIR = "/home/.chromadb"
+else:
+    CHROMA_PERSIST_DIR = os.path.join(os.path.dirname(__file__), ".chromadb")
 
 
 class DocumentProcessor:
