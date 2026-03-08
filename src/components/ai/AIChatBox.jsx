@@ -127,15 +127,15 @@ function AIChatBox({ ticketId = null }) {
       {/* ====== HEADER ====== */}
       <Box sx={{
         px: { xs: 2, md: 3 }, py: 2,
-        background: 'linear-gradient(180deg, rgba(12,12,18,0.98) 0%, rgba(8,8,12,0.95) 100%)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'linear-gradient(180deg, rgba(8,8,30,0.98) 0%, rgba(5,5,24,0.95) 100%)',
+        borderBottom: '1px solid rgba(99,102,241,0.15)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Avatar sx={{
             width: 46, height: 46, borderRadius: '14px',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-            boxShadow: '0 6px 24px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
+            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%)',
+            boxShadow: '0 6px 24px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
           }}>
             <SupportIcon sx={{ fontSize: 26, color: '#fff' }} />
           </Avatar>
@@ -211,13 +211,13 @@ function AIChatBox({ ticketId = null }) {
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
               <Box sx={{
                 width: 90, height: 90, borderRadius: '28px',
-                background: 'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(139,92,246,0.12))',
-                border: '1px solid rgba(59,130,246,0.08)',
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15), rgba(6,182,212,0.08))',
+                border: '1px solid rgba(99,102,241,0.15)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 mb: 3, animation: 'float3D 6s ease-in-out infinite',
-                boxShadow: '0 12px 48px rgba(59,130,246,0.1)',
+                boxShadow: '0 12px 48px rgba(99,102,241,0.15), 0 0 60px rgba(139,92,246,0.06)',
               }}>
-                <SparkleIcon sx={{ fontSize: 42, color: '#60a5fa' }} />
+                <SparkleIcon sx={{ fontSize: 42, color: '#818cf8' }} />
               </Box>
               <Typography sx={{ fontWeight: 700, fontSize: '1.35rem', color: '#fff', mb: 0.5 }}>
                 How can I help you today?
@@ -240,9 +240,9 @@ function AIChatBox({ ticketId = null }) {
                       border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px',
                       transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       '&:hover': {
-                        bgcolor: 'rgba(59, 130, 246, 0.1)', borderColor: 'rgba(59, 130, 246, 0.3)',
+                        bgcolor: 'rgba(99, 102, 241, 0.1)', borderColor: 'rgba(99, 102, 241, 0.3)',
                         color: '#fff', transform: 'translateY(-3px) scale(1.02)',
-                        boxShadow: '0 12px 32px rgba(59, 130, 246, 0.15)',
+                        boxShadow: '0 12px 32px rgba(99, 102, 241, 0.15)',
                       },
                     }}
                   />
@@ -287,27 +287,27 @@ function AIChatBox({ ticketId = null }) {
                   borderTopLeftRadius: msg.sender === 'ai' ? '6px' : '18px',
                   borderTopRightRadius: msg.sender === 'user' ? '6px' : '18px',
                   background: msg.sender === 'user'
-                    ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+                    ? 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)'
                     : msg.isError
-                      ? 'rgba(244, 63, 94, 0.06)'
+                      ? 'rgba(139, 92, 246, 0.06)'
                       : 'rgba(255,255,255,0.04)',
                   border: msg.sender === 'user' ? 'none'
-                    : msg.isError ? '1px solid rgba(244, 63, 94, 0.12)' : '1px solid rgba(255,255,255,0.06)',
+                    : msg.isError ? '1px solid rgba(139, 92, 246, 0.12)' : '1px solid rgba(255,255,255,0.06)',
                   boxShadow: msg.sender === 'user'
-                    ? '0 6px 28px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)'
+                    ? '0 6px 28px rgba(79, 70, 229, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)'
                     : '0 2px 12px rgba(0,0,0,0.15)',
                   transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                   '&:hover': {
                     transform: 'translateY(-1px)',
                     boxShadow: msg.sender === 'user'
-                      ? '0 8px 32px rgba(59, 130, 246, 0.25)'
+                      ? '0 8px 32px rgba(79, 70, 229, 0.25)'
                       : '0 4px 18px rgba(0,0,0,0.2)',
                   },
                   '&:hover .copy-btn': { opacity: 1 },
                 }}>
                   <Typography sx={{
                     whiteSpace: 'pre-wrap', lineHeight: 1.75, fontSize: '0.88rem',
-                    color: msg.sender === 'user' ? '#fff' : msg.isError ? '#fda4af' : 'rgba(255,255,255,0.88)',
+                    color: msg.sender === 'user' ? '#fff' : msg.isError ? '#c4b5fd' : 'rgba(255,255,255,0.88)',
                   }}>
                     {msg.text}
                   </Typography>
@@ -412,8 +412,8 @@ function AIChatBox({ ticketId = null }) {
       {/* ====== INPUT ====== */}
       <Box sx={{
         px: { xs: 2, md: 3 }, py: 2,
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        background: 'linear-gradient(0deg, rgba(12,12,18,0.98) 0%, rgba(8,8,12,0.95) 100%)',
+        borderTop: '1px solid rgba(99,102,241,0.15)',
+        background: 'linear-gradient(0deg, rgba(8,8,30,0.98) 0%, rgba(5,5,24,0.95) 100%)',
       }}>
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
           <TextField
@@ -429,9 +429,9 @@ function AIChatBox({ ticketId = null }) {
               '& .MuiOutlinedInput-root': {
                 borderRadius: '16px', bgcolor: 'rgba(255,255,255,0.04)',
                 color: '#f5f5f5', fontSize: '0.9rem', py: 0.5,
-                '& fieldset': { borderColor: 'rgba(255,255,255,0.06)' },
-                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.12)' },
-                '&.Mui-focused fieldset': { borderColor: 'rgba(59,130,246,0.4)', borderWidth: '1px' },
+                '& fieldset': { borderColor: 'rgba(99,102,241,0.15)' },
+                '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.3)' },
+                '&.Mui-focused fieldset': { borderColor: 'rgba(99,102,241,0.5)', borderWidth: '1.5px' },
                 '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.02)' },
               },
               '& .MuiInputBase-input::placeholder': { color: 'rgba(255,255,255,0.2)' },
@@ -444,13 +444,13 @@ function AIChatBox({ ticketId = null }) {
             sx={{
               width: 50, height: 50, borderRadius: '16px', flexShrink: 0,
               background: inputMessage.trim() && !loading && !isOffline && !isChecking
-                ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : 'rgba(255,255,255,0.04)',
+                ? 'linear-gradient(135deg, #4f46e5, #3730a3)' : 'rgba(255,255,255,0.04)',
               color: inputMessage.trim() && !loading && !isOffline && !isChecking ? '#fff' : 'rgba(255,255,255,0.15)',
-              boxShadow: inputMessage.trim() && !loading && !isOffline && !isChecking ? '0 4px 20px rgba(59,130,246,0.25)' : 'none',
+              boxShadow: inputMessage.trim() && !loading && !isOffline && !isChecking ? '0 4px 20px rgba(79,70,229,0.25)' : 'none',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-                boxShadow: '0 6px 28px rgba(59,130,246,0.35)',
+                background: 'linear-gradient(135deg, #b91c1c, #991b1b)',
+                boxShadow: '0 6px 28px rgba(220,38,38,0.35)',
                 transform: 'translateY(-1px)',
               },
               '&:disabled': { background: 'rgba(255,255,255,0.03)', color: 'rgba(255,255,255,0.1)' },
