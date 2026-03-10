@@ -1,0 +1,91 @@
+# Sample FAQ document for Customer Support Knowledge Base
+
+## Account Management
+
+### How do I create an account?
+To create an account, click on the "Sign Up" button on the homepage. Enter your email address, create a password, and fill in your personal information. You'll receive a confirmation email to verify your account.
+
+### How do I reset my password?
+Click on "Forgot Password" on the login page. Enter your registered email address, and we'll send you a password reset link. Click the link in the email and follow the instructions to create a new password.
+
+### Can I change my email address?
+Yes, you can change your email address in your account settings. Go to Profile > Settings > Email and enter your new email address. You'll need to verify the new email before the change takes effect.
+
+## Billing and Payments
+
+### What payment methods do you accept?
+We accept all major credit cards (Visa, Mastercard, American Express), debit cards, PayPal, and bank transfers for enterprise customers.
+
+### How do I update my payment information?
+Go to Account Settings > Billing > Payment Methods. You can add, remove, or update your payment methods there. Your new payment method will be used for future transactions.
+
+### What is your refund policy?
+We offer a 30-day money-back guarantee for all new subscriptions. If you're not satisfied with our service, contact support within 30 days of purchase for a full refund.
+
+### When will I be charged?
+Subscriptions are billed at the beginning of each billing cycle. You'll receive an invoice via email 3 days before your card is charged.
+
+## Technical Support
+
+### What are your system requirements?
+Our platform works on all modern web browsers (Chrome, Firefox, Safari, Edge). We recommend using the latest version for the best experience. Mobile apps are available for iOS 13+ and Android 8+.
+
+### Why is the application running slowly?
+Slow performance can be caused by poor internet connection, browser cache, or too many open tabs. Try clearing your browser cache, closing unnecessary tabs, or using a different browser.
+
+### How do I report a bug?
+To report a bug, go to Help > Report Issue. Provide a detailed description of the problem, steps to reproduce it, and any error messages you see. Attach screenshots if possible.
+
+### Is there a mobile app?
+Yes, we have mobile apps for both iOS and Android devices. Download them from the App Store or Google Play Store by searching for "Customer Support AI".
+
+## Features and Usage
+
+### How do I create a support ticket?
+Click on "Create Ticket" from your dashboard. Enter a subject, description of your issue, and select the appropriate category. You can attach files if needed. Click "Submit" to create the ticket.
+
+### How long does it take to get a response?
+Our AI chatbot responds instantly to common questions. For complex issues that require human support, response times are typically:
+- High Priority: 2-4 hours
+- Medium Priority: 8-12 hours  
+- Low Priority: 24-48 hours
+
+### Can I track my ticket status?
+Yes, you can track all your tickets from the "My Tickets" section. You'll see the current status (Open, In Progress, Resolved, Closed) and can view the conversation history.
+
+### How do I chat with a support agent?
+Click on the chat icon in the bottom right corner of any page. Start typing your question, and our AI will assist you. If needed, it will automatically connect you with a human agent.
+
+## Business Hours
+
+### What are your support hours?
+Our AI chatbot is available 24/7. Human support agents are available:
+- Monday-Friday: 9 AM - 6 PM EST
+- Saturday: 10 AM - 4 PM EST
+- Sunday: Closed (emergency support only)
+
+### Do you provide weekend support?
+Yes, we provide limited support on Saturdays. For critical issues, emergency support is available 24/7 for premium customers.
+
+## Contact Information
+
+### How can I contact support?
+You can reach us through:
+- Live Chat: Available on our website
+- Email: support@customersupport.ai
+- Phone: 1-800-SUPPORT (for premium customers)
+- Social Media: @CustomerSupportAI on Twitter and Facebook
+
+### Where is your company located?
+Our headquarters is located in San Francisco, California, USA. We have regional offices in New York, London, and Singapore.
+
+## Privacy and Security
+
+### Is my data secure?
+Yes, we use industry-standard encryption (SSL/TLS) for all data transmission. All data is stored in secure, encrypted databases. We are GDPR and SOC 2 compliant.
+
+### How do you use my personal information?
+We only use your information to provide and improve our services. We never sell your data to third parties. Read our Privacy Policy for full details.
+
+### Can I delete my account?
+Yes, you can delete your account at any time from Account Settings > Privacy > Delete Account. Note that this action is permanent and cannot be undone.

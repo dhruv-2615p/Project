@@ -1,0 +1,31 @@
+# ── Frontend (React / Node) ────────────────────────────────────────────────
+node_modules/
+/build
+
+# Environment variables (may contain secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Create React App / misc build artefacts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── IDE ───────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# ── OS ────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────────────────────────────
+*.log
+logs/

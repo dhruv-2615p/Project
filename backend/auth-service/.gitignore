@@ -1,0 +1,50 @@
+# Maven build output
+target/
+src/main/resources
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Compiled class files
+*.class
+
+# JAR / WAR / EAR files
+*.jar
+*.war
+*.ear
+*.nar
+
+# H2 embedded database files
+data/*.mv.db
+data/*.trace.db
+
+# Sensitive / environment-specific configuration
+application-azure.properties
+
+# Maven wrapper binary
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE — IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IDE — Eclipse
+.project
+.classpath
+.settings/
+
+# IDE — VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Spring Boot dev-tools restart file
+spring-shell.log

@@ -1,0 +1,35 @@
+# Environment variables for AI Service
+GEMINI_API_KEY=
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# ChromaDB vector database
+chroma_db/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+.env.example
+.env
+
+# Logs
+*.log
+
+.azure
