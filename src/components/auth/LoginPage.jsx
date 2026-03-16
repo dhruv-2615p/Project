@@ -14,6 +14,8 @@ const LoginPage = () => {
   const location = useLocation();
   const justRegistered = location.state?.registered;
 
+  const isEmailNotVerified = error.toLowerCase().includes('not verified');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -81,7 +83,26 @@ const LoginPage = () => {
 
         {justRegistered && <Alert severity="success" sx={{ mb: 2, borderRadius: 3, bgcolor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: '#fbbf24' }}>Account created successfully! Please sign in.</Alert>}
 
-        {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3, bgcolor: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 3, bgcolor: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            {error}
+            {isEmailNotVerified && email && (
+              <Box sx={{ mt: 1 }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => navigate('/verify-email', { state: { email } })}
+                  sx={{
+                    borderColor: '#06b6d4', color: '#06b6d4', borderRadius: 2, fontWeight: 600, fontSize: '0.75rem',
+                    '&:hover': { borderColor: '#22d3ee', color: '#22d3ee', bgcolor: 'rgba(6,182,212,0.08)' },
+                  }}
+                >
+                  Verify Email Now
+                </Button>
+              </Box>
+            )}
+          </Alert>
+        )}
 
         <TextField
           fullWidth label="Email" type="email" value={email}
