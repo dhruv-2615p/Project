@@ -14,6 +14,16 @@ const authService = {
     return response.data;
   },
 
+  sendOtp: async (email) => {
+    const response = await authApi.post('/api/auth/send-otp', { email });
+    return response.data;
+  },
+
+  verifyOtp: async (email, otp) => {
+    const response = await authApi.post('/api/auth/verify-otp', { email, otp });
+    return response.data;
+  },
+
   login: async (email, password) => {
     const response = await authApi.post('/api/auth/login', { email, password });
     return response.data;

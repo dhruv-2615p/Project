@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { useAuth } from '../../context/AuthContext';
+
+const passwordRules = [
+  { label: 'At least 6 characters', test: (p) => p.length >= 6 },
+  { label: 'One uppercase letter', test: (p) => /[A-Z]/.test(p) },
+  { label: 'One lowercase letter', test: (p) => /[a-z]/.test(p) },
+  { label: 'One digit or special character', test: (p) => /[\d\W]/.test(p) },
+];
 
 const RegisterPage = () => {
   const [fullName, setFullName] = useState('');
@@ -13,17 +22,20 @@ const RegisterPage = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const allPasswordRulesMet = passwordRules.every((r) => r.test(password));
+  const isAlreadyRegistered = error.toLowerCase().includes('already registered');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (!allPasswordRulesMet) {
+      setError('Please meet all password requirements.');
       return;
     }
     setLoading(true);
     try {
       await register(fullName, email, password);
-      navigate('/login', { state: { registered: true } });
+      navigate('/verify-email', { state: { email } });
     } catch (err) {
       const msg = err.response?.data?.error || 'Registration failed. Please try again.';
       setError(msg);
@@ -82,7 +94,26 @@ const RegisterPage = () => {
           </Typography>
         </Box>
 
-        {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3, bgcolor: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 3, bgcolor: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            {error}
+            {isAlreadyRegistered && email && (
+              <Box sx={{ mt: 1 }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => navigate('/verify-email', { state: { email } })}
+                  sx={{
+                    borderColor: '#06b6d4', color: '#06b6d4', borderRadius: 2, fontWeight: 600, fontSize: '0.75rem',
+                    '&:hover': { borderColor: '#22d3ee', color: '#22d3ee', bgcolor: 'rgba(6,182,212,0.08)' },
+                  }}
+                >
+                  Verify Email Instead
+                </Button>
+              </Box>
+            )}
+          </Alert>
+        )}
 
         <TextField
           fullWidth label="Full Name" value={fullName}
@@ -118,7 +149,7 @@ const RegisterPage = () => {
           fullWidth label="Password" type="password" value={password}
           onChange={(e) => setPassword(e.target.value)} required
           sx={{
-            mb: 3.5,
+            mb: 1.5,
             '& .MuiOutlinedInput-root': {
               borderRadius: 3, bgcolor: 'rgba(255,255,255,0.04)',
               '& fieldset': { borderColor: 'rgba(139, 92, 246, 0.2)' },
@@ -129,6 +160,24 @@ const RegisterPage = () => {
             '& .MuiInputLabel-root.Mui-focused': { color: '#a78bfa' },
           }}
         />
+
+        {password && (
+          <Box sx={{ mb: 2.5, pl: 1 }}>
+            {passwordRules.map((rule, i) => {
+              const passed = rule.test(password);
+              return (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 0.3 }}>
+                  {passed
+                    ? <CheckCircleOutlineIcon sx={{ fontSize: 16, color: '#10b981' }} />
+                    : <CancelOutlinedIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.25)' }} />}
+                  <Typography variant="caption" sx={{ color: passed ? '#10b981' : 'rgba(255,255,255,0.35)', fontSize: '0.72rem' }}>
+                    {rule.label}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
 
         <Button
           type="submit" fullWidth variant="contained" disabled={loading}

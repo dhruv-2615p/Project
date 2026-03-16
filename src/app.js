@@ -5,6 +5,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AIChatBox from './components/ai/AIChatBox';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
+import EmailVerificationPage from './components/auth/EmailVerificationPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
@@ -102,6 +103,7 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
+        <Route path="/verify-email" element={user ? <Navigate to="/" /> : <EmailVerificationPage />} />
         <Route
           path="/"
           element={
