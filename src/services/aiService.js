@@ -12,13 +12,32 @@ const aiService = {
   /**
    * Get AI response for customer query
    */
-  getAIResponse: async (query, ticketId = null) => {
+  getAIResponse: async (query, ticketId = null, imageFile = null) => {
     try {
-      const response = await axios.post(`${AI_BASE_URL}/query`, {
-        query: query,
-        ticket_id: ticketId
-      }, { timeout: 90000 });
-      return response.data;
+      if (imageFile) {
+        // Use FormData for file upload
+        const formData = new FormData();
+        formData.append('query', query || '');
+        if (ticketId) {
+          formData.append('ticket_id', ticketId);
+        }
+        formData.append('image', imageFile);
+
+        const response = await axios.post(`${AI_BASE_URL}/query`, formData, {
+          timeout: 90000,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        return response.data;
+      } else {
+        // Regular JSON request without image
+        const response = await axios.post(`${AI_BASE_URL}/query`, {
+          query: query,
+          ticket_id: ticketId
+        }, { timeout: 90000 });
+        return response.data;
+      }
     } catch (error) {
       console.error('Error getting AI response:', error);
       throw error;

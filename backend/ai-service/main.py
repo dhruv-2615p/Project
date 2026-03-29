@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
 import os
 from dotenv import load_dotenv
+import tempfile
+import shutil
 
 from rag_engine import RAGEngine
 
@@ -63,23 +65,61 @@ async def health_check():
     }
 
 @app.post("/api/ai/query", response_model=AIResponse)
-async def generate_ai_response(request: QueryRequest):
+async def generate_ai_response(
+    query: Optional[str] = Form(None),
+    ticket_id: Optional[int] = Form(None),
+    image: Optional[UploadFile] = File(None)
+):
     """
     Generate AI response for customer query using RAG
-    
+    Supports both text queries and image uploads
+
     Args:
-        request: QueryRequest containing customer query
-    
+        query: Customer query text (optional if image is provided)
+        ticket_id: Optional ticket ID
+        image: Optional image file upload
+
     Returns:
         AIResponse with generated answer, confidence score, and sources
     """
     try:
+        image_path = None
+
+        # Handle image upload if present
+        if image:
+            # Validate file type
+            if not image.content_type or not image.content_type.startswith('image/'):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid file type. Only images are allowed."
+                )
+
+            # Save uploaded image to temporary file
+            suffix = os.path.splitext(image.filename)[1] if image.filename else '.jpg'
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
+                shutil.copyfileobj(image.file, tmp_file)
+                image_path = tmp_file.name
+
+        # Ensure at least query or image is provided
+        if not query and not image_path:
+            raise HTTPException(
+                status_code=400,
+                detail="Either query text or image must be provided"
+            )
+
         # Generate response using RAG engine
-        result = rag_engine.get_response(request.query)
-        
+        result = rag_engine.get_response(query or "What's in this image?", image_path=image_path)
+
+        # Clean up temporary file
+        if image_path and os.path.exists(image_path):
+            try:
+                os.unlink(image_path)
+            except Exception as e:
+                print(f"Warning: Could not delete temporary file {image_path}: {e}")
+
         # Determine if should escalate to human agent
         should_escalate = result["confidence_score"] < 0.75
-        
+
         return AIResponse(
             response=result["response"],
             confidence_score=result["confidence_score"],
@@ -87,8 +127,16 @@ async def generate_ai_response(request: QueryRequest):
             should_escalate=should_escalate,
             success=result["success"]
         )
-    
+
+    except HTTPException:
+        raise
     except Exception as e:
+        # Clean up temporary file in case of error
+        if image_path and os.path.exists(image_path):
+            try:
+                os.unlink(image_path)
+            except:
+                pass
         raise HTTPException(
             status_code=500,
             detail=f"Error generating AI response: {str(e)}"

@@ -16,12 +16,14 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_community.vectorstores import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+import google.generativeai as genai
+from PIL import Image
 
 import os
 import re
 import time
 from dotenv import load_dotenv
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 
 # Load environment variables
 load_dotenv()
@@ -87,15 +89,19 @@ class RAGEngine:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
-        
+
         os.environ["GOOGLE_API_KEY"] = api_key
-        
+
         # Initialize Gemini LLM
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
             temperature=0.7,
             max_output_tokens=4096
         )
+
+        # Configure genai for vision capabilities
+        genai.configure(api_key=api_key)
+        self.vision_model = genai.GenerativeModel('gemini-2.5-flash')
         
         # Initialize Google Embeddings (new model name: gemini-embedding-001)
         print("Initializing Google Embeddings...")
@@ -300,23 +306,102 @@ class RAGEngine:
         
         # Clamp between 0.15 and 0.98
         return max(0.15, min(0.98, total_confidence))
-    
-    def get_response(self, query: str) -> dict:
+
+    def _analyze_image(self, image_path: str, query: str) -> str:
         """
-        Generate AI response using RAG
-        Similar to chatbot_agent in your notebook
+        Analyze image using Gemini Vision API
+
+        Args:
+            image_path: Path to the image file
+            query: User's question about the image
+
+        Returns:
+            Description or analysis of the image
         """
         try:
+            # Load the image
+            img = Image.open(image_path)
+
+            # Create prompt for image analysis
+            prompt = f"""You are a helpful customer support assistant analyzing an image from a customer.
+
+Customer's question: {query}
+
+Please analyze this image and provide a helpful response. If the customer asked a specific question about the image, answer that. Otherwise, describe what you see in the image and how it might relate to a customer support inquiry (e.g., product issue, order problem, technical error, etc.).
+
+Be conversational and helpful."""
+
+            # Generate response using vision model
+            response = self.vision_model.generate_content([prompt, img])
+
+            return response.text
+
+        except Exception as e:
+            print(f"Error analyzing image: {str(e)}")
+            return f"I can see you've uploaded an image, but I'm having trouble analyzing it. Error: {str(e)}"
+
+    def get_response(self, query: str, image_path: Optional[str] = None) -> dict:
+        """
+        Generate AI response using RAG
+        Supports both text queries and image analysis
+        """
+        try:
+            # If image is provided, analyze it first
+            if image_path:
+                image_analysis = self._analyze_image(image_path, query)
+
+                # For image queries, we still check knowledge base for relevant context
+                # This allows combining image analysis with existing support documentation
+                relevant_docs, scores = self._retrieve_context(query, k=2, threshold=0.8)
+
+                if relevant_docs:
+                    context = "\n\n".join([doc.page_content for doc in relevant_docs])
+                    sources = list(set([doc.metadata.get("source", "unknown") for doc in relevant_docs]))
+
+                    # Combine image analysis with knowledge base context
+                    prompt = f"""You are a helpful customer support assistant.
+
+The customer uploaded an image and asked: {query}
+
+Image Analysis:
+{image_analysis}
+
+Relevant Support Information:
+{context}
+
+Provide a comprehensive response that addresses both the image and any relevant support information. Be conversational and helpful."""
+
+                    response = self.llm.invoke(prompt)
+                    ai_response = response.content
+                    confidence = 0.80  # High confidence for image + context
+                else:
+                    # Image analysis only, no relevant context
+                    ai_response = image_analysis
+                    sources = []
+                    scores = []
+                    confidence = 0.70  # Good confidence for image-only response
+
+                return {
+                    "response": ai_response,
+                    "confidence_score": round(confidence, 2),
+                    "sources": sources,
+                    "success": True,
+                    "context_found": len(relevant_docs) > 0 if relevant_docs else False,
+                    "chunks_retrieved": len(relevant_docs) if relevant_docs else 0,
+                    "image_analyzed": True
+                }
+
+            # Original text-only logic
             # Retrieve relevant context
             relevant_docs, scores = self._retrieve_context(query, k=4, threshold=0.8)
-            
+
             context_found = len(relevant_docs) > 0
-            
+
             if context_found:
                 # Build context from retrieved documents
                 context = "\n\n".join([doc.page_content for doc in relevant_docs])
                 sources = list(set([doc.metadata.get("source", "unknown") for doc in relevant_docs]))
-                
+
                 # Create prompt with context - natural responses only
                 prompt = f"""You are a helpful customer support assistant. Answer the question using ONLY the information from the context below.
 
@@ -333,11 +418,11 @@ Context:
 Customer Question: {query}
 
 Your helpful response:"""
-                
+
                 # Get response from LLM
                 response = self.llm.invoke(prompt)
                 ai_response = response.content
-                
+
             else:
                 # No relevant context - provide general helpful response
                 sources = []
@@ -352,14 +437,14 @@ Rules:
 Customer Question: {query}
 
 Your helpful response:"""
-                
+
                 response = self.llm.invoke(prompt)
                 ai_response = response.content
                 scores = []  # No retrieval scores
-            
+
             # Calculate confidence with context awareness
             confidence = self._calculate_confidence(scores, ai_response, query, context_found)
-            
+
             return {
                 "response": ai_response,
                 "confidence_score": round(confidence, 2),

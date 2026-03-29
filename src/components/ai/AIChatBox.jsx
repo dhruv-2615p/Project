@@ -13,7 +13,10 @@ import {
   Refresh as RefreshIcon,
   SupportAgent as SupportIcon,
   ContentCopy as CopyIcon,
-  Check as CheckIcon
+  Check as CheckIcon,
+  AttachFile as AttachFileIcon,
+  Close as CloseIcon,
+  Image as ImageIcon
 } from '@mui/icons-material';
 import aiService from '../../services/aiService';
 
@@ -23,8 +26,11 @@ function AIChatBox({ ticketId = null }) {
   const [loading, setLoading] = useState(false);
   const [aiServiceStatus, setAiServiceStatus] = useState('checking');
   const [copiedId, setCopiedId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
   const retryTimerRef = useRef(null);
 
   // Health check on mount
@@ -60,17 +66,60 @@ function AIChatBox({ ticketId = null }) {
     }
   };
 
+  const handleImageSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+      setSelectedImage(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSendMessage = async () => {
     const text = inputMessage.trim();
-    if (!text || loading) return;
+    if ((!text && !selectedImage) || loading) return;
 
-    const userMsg = { id: Date.now(), text, sender: 'user', timestamp: new Date() };
+    const userMsg = {
+      id: Date.now(),
+      text: text || '(Image attached)',
+      sender: 'user',
+      timestamp: new Date(),
+      image: imagePreview
+    };
     setMessages(prev => [...prev, userMsg]);
     setInputMessage('');
+
+    const currentImage = selectedImage;
+    const currentText = text;
+
+    // Clear image after adding to messages
+    handleRemoveImage();
     setLoading(true);
 
     try {
-      const resp = await aiService.getAIResponse(text, ticketId);
+      const resp = await aiService.getAIResponse(currentText, ticketId, currentImage);
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         text: resp.response,
@@ -305,6 +354,26 @@ function AIChatBox({ ticketId = null }) {
                   },
                   '&:hover .copy-btn': { opacity: 1 },
                 }}>
+                  {/* Show image if present */}
+                  {msg.image && (
+                    <Box sx={{
+                      mb: msg.text ? 1.5 : 0,
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      maxWidth: '300px',
+                      border: '1px solid rgba(255,255,255,0.1)'
+                    }}>
+                      <img
+                        src={msg.image}
+                        alt="Uploaded"
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                          display: 'block'
+                        }}
+                      />
+                    </Box>
+                  )}
                   <Typography sx={{
                     whiteSpace: 'pre-wrap', lineHeight: 1.75, fontSize: '0.88rem',
                     color: msg.sender === 'user' ? '#fff' : msg.isError ? '#c4b5fd' : 'rgba(255,255,255,0.88)',
@@ -415,7 +484,89 @@ function AIChatBox({ ticketId = null }) {
         borderTop: '1px solid rgba(99,102,241,0.15)',
         background: 'linear-gradient(0deg, rgba(8,8,30,0.98) 0%, rgba(5,5,24,0.95) 100%)',
       }}>
+        {/* Image preview */}
+        {imagePreview && (
+          <Box sx={{
+            mb: 1.5,
+            p: 1,
+            borderRadius: '12px',
+            bgcolor: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(99,102,241,0.2)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 1,
+            position: 'relative'
+          }}>
+            <ImageIcon sx={{ color: 'rgba(255,255,255,0.5)', fontSize: 20 }} />
+            <img
+              src={imagePreview}
+              alt="Preview"
+              style={{
+                maxWidth: '80px',
+                maxHeight: '80px',
+                borderRadius: '8px',
+                objectFit: 'cover'
+              }}
+            />
+            <IconButton
+              size="small"
+              onClick={handleRemoveImage}
+              sx={{
+                position: 'absolute',
+                top: -8,
+                right: -8,
+                bgcolor: 'rgba(239,68,68,0.9)',
+                color: '#fff',
+                width: 24,
+                height: 24,
+                '&:hover': { bgcolor: 'rgba(220,38,38,1)' }
+              }}
+            >
+              <CloseIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Box>
+        )}
+
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageSelect}
+            style={{ display: 'none' }}
+          />
+
+          {/* Attach button */}
+          <Tooltip title="Attach image" arrow>
+            <IconButton
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading || isOffline || isChecking || selectedImage !== null}
+              sx={{
+                width: 50,
+                height: 50,
+                borderRadius: '16px',
+                flexShrink: 0,
+                bgcolor: selectedImage ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.04)',
+                color: selectedImage ? '#818cf8' : 'rgba(255,255,255,0.3)',
+                border: '1px solid rgba(99,102,241,0.15)',
+                transition: 'all 0.3s',
+                '&:hover': {
+                  bgcolor: 'rgba(99,102,241,0.15)',
+                  borderColor: 'rgba(99,102,241,0.3)',
+                  color: '#818cf8'
+                },
+                '&:disabled': {
+                  bgcolor: 'rgba(255,255,255,0.02)',
+                  color: 'rgba(255,255,255,0.1)',
+                  borderColor: 'rgba(255,255,255,0.05)'
+                }
+              }}
+            >
+              <AttachFileIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
+
           <TextField
             inputRef={inputRef}
             fullWidth multiline maxRows={4}
@@ -440,13 +591,13 @@ function AIChatBox({ ticketId = null }) {
           />
           <IconButton
             onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || loading || isOffline || isChecking}
+            disabled={(!inputMessage.trim() && !selectedImage) || loading || isOffline || isChecking}
             sx={{
               width: 50, height: 50, borderRadius: '16px', flexShrink: 0,
-              background: inputMessage.trim() && !loading && !isOffline && !isChecking
+              background: (inputMessage.trim() || selectedImage) && !loading && !isOffline && !isChecking
                 ? 'linear-gradient(135deg, #4f46e5, #3730a3)' : 'rgba(255,255,255,0.04)',
-              color: inputMessage.trim() && !loading && !isOffline && !isChecking ? '#fff' : 'rgba(255,255,255,0.15)',
-              boxShadow: inputMessage.trim() && !loading && !isOffline && !isChecking ? '0 4px 20px rgba(79,70,229,0.25)' : 'none',
+              color: (inputMessage.trim() || selectedImage) && !loading && !isOffline && !isChecking ? '#fff' : 'rgba(255,255,255,0.15)',
+              boxShadow: (inputMessage.trim() || selectedImage) && !loading && !isOffline && !isChecking ? '0 4px 20px rgba(79,70,229,0.25)' : 'none',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
                 background: 'linear-gradient(135deg, #b91c1c, #991b1b)',
