@@ -1,8 +1,19 @@
 import axios from 'axios';
 
 // AI Service base URL (FastAPI backend)
-const AI_BASE_URL = (process.env.REACT_APP_AI_URL || 'https://ai-customersupport.azurewebsites.net') + '/api/ai';
-const HEALTH_URL = (process.env.REACT_APP_AI_URL || 'https://ai-customersupport.azurewebsites.net') + '/health';
+// In production (VM), use relative URL since Nginx proxies requests
+const getBaseUrl = () => {
+  if (process.env.REACT_APP_AI_URL) {
+    return process.env.REACT_APP_AI_URL;
+  }
+  if (window.location.hostname === 'localhost') {
+    return 'http://localhost:8000';
+  }
+  return ''; // Use relative URLs in production
+};
+
+const AI_BASE_URL = getBaseUrl() + '/api/ai';
+const HEALTH_URL = getBaseUrl() + '/health';
 
 /**
  * AI Service for interacting with FastAPI backend

@@ -77,6 +77,42 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            if (email == null || email.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Email is required"));
+            }
+            String frontendUrl = request.getOrDefault("frontendUrl", "https://ai-support-frontend.azurewebsites.net");
+            authService.forgotPassword(email, frontendUrl);
+            return ResponseEntity.ok(Map.of("message", "Password reset link sent to your email"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        try {
+            String token = request.get("token");
+            String newPassword = request.get("newPassword");
+            if (token == null || token.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Reset token is required"));
+            }
+            if (newPassword == null || newPassword.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "New password is required"));
+            }
+            if (newPassword.length() < 6) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Password must be at least 6 characters"));
+            }
+            authService.resetPassword(token, newPassword);
+            return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()

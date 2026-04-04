@@ -35,6 +35,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:3001",
+                "http://localhost:3002",
                 "https://ai-support-frontend.azurewebsites.net",
                 "https://auth-service-backend.azurewebsites.net"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

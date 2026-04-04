@@ -1,11 +1,16 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, CssBaseline, ThemeProvider, createTheme, IconButton, Tooltip, CircularProgress } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AIChatBox from './components/ai/AIChatBox';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import EmailVerificationPage from './components/auth/EmailVerificationPage';
+import ForgotPasswordPage from './components/auth/ForgotPasswordPage';
+import ResetPasswordPage from './components/auth/ResetPasswordPage';
+import LandingPage from './components/landing/LandingPage';
+import TicketPage from './components/ticket/TicketPage';
+import DashboardPage from './components/ticket/DashboardPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
@@ -74,7 +79,8 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function AppContent() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <Box sx={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, #030014 0%, #050020 40%, #080030 70%, #030018 100%)' }}>
@@ -101,27 +107,56 @@ function AppContent() {
       </Box>
 
       <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/ticket" element={<TicketPage />} />
+
+        {/* Auth Routes - redirect to landing if logged in */}
         <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
         <Route path="/verify-email" element={user ? <Navigate to="/" /> : <EmailVerificationPage />} />
+        <Route path="/forgot-password" element={user ? <Navigate to="/" /> : <ForgotPasswordPage />} />
+        <Route path="/reset-password" element={user ? <Navigate to="/" /> : <ResetPasswordPage />} />
+
+        {/* Protected Dashboard Route */}
         <Route
-          path="/"
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected AI Chat Route */}
+        <Route
+          path="/chat"
           element={
             <ProtectedRoute>
               <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, py: 3, px: { xs: 1.5, md: 3 } }}>
                 {/* Header */}
                 <Box sx={{ textAlign: 'center', mb: 3, position: 'relative' }}>
                   {user && (
-                    <Tooltip title="Logout">
+                    <Tooltip title="Go Back">
                       <IconButton
-                        onClick={logout}
+                        onClick={() => navigate(-1)}
                         sx={{
-                          position: 'absolute', right: 0, top: 0,
-                          color: 'rgba(255,255,255,0.4)',
-                          '&:hover': { color: '#8b5cf6', background: 'rgba(139,92,246,0.1)' },
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          color: 'rgba(255,255,255,0.5)',
+                          background: 'rgba(99, 102, 241, 0.1)',
+                          border: '1px solid rgba(99, 102, 241, 0.2)',
+                          '&:hover': {
+                            color: '#fff',
+                            background: 'rgba(99,102,241,0.2)',
+                            transform: 'translateX(-3px)',
+                          },
+                          transition: 'all 0.3s ease',
                         }}
                       >
-                        <LogoutIcon />
+                        <ArrowBackIcon />
                       </IconButton>
                     </Tooltip>
                   )}
