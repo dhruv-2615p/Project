@@ -72,6 +72,13 @@ const TicketPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Require login before submitting
+    if (!user) {
+      navigate('/login', { state: { from: '/ticket' } });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -495,9 +502,13 @@ const TicketPage = () => {
               borderRadius: '18px',
               fontSize: '1.2rem',
               fontWeight: 700,
-              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 40%, #06b6d4 100%)',
+              background: user 
+                ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 40%, #06b6d4 100%)'
+                : 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
               backgroundSize: '200% auto',
-              boxShadow: '0 12px 40px rgba(99, 102, 241, 0.5), 0 0 60px rgba(99, 102, 241, 0.2)',
+              boxShadow: user 
+                ? '0 12px 40px rgba(99, 102, 241, 0.5), 0 0 60px rgba(99, 102, 241, 0.2)'
+                : '0 12px 40px rgba(245, 158, 11, 0.5), 0 0 60px rgba(239, 68, 68, 0.2)',
               transition: 'all 0.4s ease',
               '&:hover': {
                 backgroundPosition: 'right center',
@@ -509,7 +520,7 @@ const TicketPage = () => {
               },
             }}
           >
-            {submitted ? '✓ Ticket Submitted!' : loading ? 'Submitting...' : 'Submit Ticket'}
+            {submitted ? '✓ Ticket Submitted!' : loading ? 'Submitting...' : user ? 'Submit Ticket' : 'Login to Submit'}
           </Button>
         </Box>
 

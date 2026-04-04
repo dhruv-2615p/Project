@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -16,6 +16,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -64,6 +66,38 @@ const DashboardPage = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  const getRelativeTime = (dateString) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now - date;
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return 'Just now';
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    const diffDay = Math.floor(diffHr / 24);
+    if (diffDay < 7) return `${diffDay}d ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const filteredTickets = useMemo(() => {
+    if (statusFilter === 'all') return tickets;
+    return tickets.filter((t) => t.status === statusFilter);
+  }, [tickets, statusFilter]);
+
+  const resolvedPercent = useMemo(() => {
+    if (!stats || stats.totalTickets === 0) return 0;
+    return Math.round(((stats.resolvedTickets + stats.closedTickets) / stats.totalTickets) * 100);
+  }, [stats]);
 
   useEffect(() => {
     if (!user) {
@@ -356,6 +390,61 @@ const DashboardPage = () => {
           </Alert>
         )}
 
+        {/* Welcome Banner */}
+        <Box
+          sx={{
+            mb: 4,
+            p: { xs: 3, md: 4 },
+            borderRadius: '24px',
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(6, 182, 212, 0.1) 100%)',
+            border: '1px solid rgba(99, 102, 241, 0.25)',
+            display: 'flex',
+            alignItems: { xs: 'flex-start', md: 'center' },
+            justifyContent: 'space-between',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 3,
+          }}
+        >
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#fff', mb: 0.5 }}>
+              {getGreeting()}, {user?.fullName?.split(' ')[0] || 'User'} 👋
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.55)' }}>
+              {stats?.totalTickets === 0
+                ? 'You have no tickets yet. Create one to get started!'
+                : `You have ${stats?.openTickets || 0} open ticket${(stats?.openTickets || 0) !== 1 ? 's' : ''} and ${stats?.inProgressTickets || 0} in progress.`}
+            </Typography>
+          </Box>
+          {stats && stats.totalTickets > 0 && (
+            <Box sx={{ minWidth: 160, textAlign: 'center' }}>
+              <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                <CircularProgress
+                  variant="determinate"
+                  value={resolvedPercent}
+                  size={72}
+                  thickness={5}
+                  sx={{ color: '#10b981', '& .MuiCircularProgress-circle': { strokeLinecap: 'round' } }}
+                />
+                <CircularProgress
+                  variant="determinate"
+                  value={100}
+                  size={72}
+                  thickness={5}
+                  sx={{ color: 'rgba(255,255,255,0.06)', position: 'absolute', left: 0 }}
+                />
+                <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, color: '#10b981' }}>
+                    {resolvedPercent}%
+                  </Typography>
+                </Box>
+              </Box>
+              <Typography variant="caption" sx={{ display: 'block', color: 'rgba(255,255,255,0.5)', mt: 0.5 }}>
+                Resolved
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
         {/* Stats Grid */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(5, 1fr)' }, gap: 3, mb: 5 }}>
           <StatCard
@@ -396,7 +485,7 @@ const DashboardPage = () => {
         </Box>
 
         {/* Tickets Section */}
-        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
           <Typography
             variant="h5"
             sx={{
@@ -409,9 +498,35 @@ const DashboardPage = () => {
           >
             Your Tickets
           </Typography>
+          <Tabs
+            value={statusFilter}
+            onChange={(_, v) => setStatusFilter(v)}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              minHeight: 36,
+              '& .MuiTab-root': {
+                minHeight: 36,
+                py: 0.5,
+                px: 2,
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.5)',
+                textTransform: 'capitalize',
+                '&.Mui-selected': { color: '#a78bfa' },
+              },
+              '& .MuiTabs-indicator': { background: 'linear-gradient(90deg, #6366f1, #8b5cf6)', borderRadius: 2 },
+            }}
+          >
+            <Tab label={`All (${tickets.length})`} value="all" />
+            <Tab label={`Open (${stats?.openTickets || 0})`} value="open" />
+            <Tab label={`In Progress (${stats?.inProgressTickets || 0})`} value="in-progress" />
+            <Tab label={`Resolved (${stats?.resolvedTickets || 0})`} value="resolved" />
+            <Tab label={`Closed (${stats?.closedTickets || 0})`} value="closed" />
+          </Tabs>
         </Box>
 
-        {tickets.length === 0 ? (
+        {filteredTickets.length === 0 ? (
           <Card
             sx={{
               p: 6,
@@ -422,26 +537,31 @@ const DashboardPage = () => {
             }}
           >
             <ConfirmationNumberIcon sx={{ fontSize: 60, color: 'rgba(255,255,255,0.3)', mb: 2 }} />
-            <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}>
-              No tickets yet
+            <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1 }}>
+              {statusFilter === 'all' ? 'No tickets yet' : `No ${statusFilter} tickets`}
             </Typography>
-            <Button
-              onClick={() => navigate('/ticket')}
-              startIcon={<AddIcon />}
-              variant="contained"
-              sx={{
-                px: 4,
-                py: 1.5,
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              }}
-            >
-              Create Your First Ticket
-            </Button>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', mb: 3 }}>
+              {statusFilter === 'all' ? 'Create a support ticket and track it here.' : 'Try switching to a different status tab.'}
+            </Typography>
+            {statusFilter === 'all' && (
+              <Button
+                onClick={() => navigate('/ticket')}
+                startIcon={<AddIcon />}
+                variant="contained"
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                }}
+              >
+                Create Your First Ticket
+              </Button>
+            )}
           </Card>
         ) : (
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
-            {tickets.map((ticket) => (
+            {filteredTickets.map((ticket) => (
               <Card
                 key={ticket.id}
                 onClick={() => setSelectedTicket(ticket)}
@@ -462,9 +582,14 @@ const DashboardPage = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography sx={{ fontSize: 24 }}>{categoryIcons[ticket.category] || '📋'}</Typography>
-                      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>
-                        {ticket.category}
-                      </Typography>
+                      <Box>
+                        <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', fontWeight: 700, lineHeight: 1 }}>
+                          #TK-{String(ticket.id).padStart(3, '0')}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>
+                          {ticket.category}
+                        </Typography>
+                      </Box>
                     </Box>
                     <Chip
                       label={ticket.status}
@@ -520,9 +645,11 @@ const DashboardPage = () => {
                         textTransform: 'capitalize',
                       }}
                     />
-                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>
-                      {formatDate(ticket.createdAt)}
-                    </Typography>
+                    <Tooltip title={formatDate(ticket.createdAt)} arrow>
+                      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)', cursor: 'default' }}>
+                        {getRelativeTime(ticket.createdAt)}
+                      </Typography>
+                    </Tooltip>
                   </Box>
                   
                   {ticket.aiResponse && (
@@ -561,11 +688,27 @@ const DashboardPage = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Typography sx={{ fontSize: 32 }}>{categoryIcons[selectedTicket.category] || '📋'}</Typography>
                 <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: '0.7rem',
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        color: '#a78bfa',
+                        background: 'rgba(139, 92, 246, 0.15)',
+                        px: 1,
+                        py: 0.2,
+                        borderRadius: '6px',
+                      }}
+                    >
+                      #TK-{String(selectedTicket.id).padStart(3, '0')}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                      Created {formatDate(selectedTicket.createdAt)}
+                    </Typography>
+                  </Box>
                   <Typography variant="h5" sx={{ fontWeight: 700, color: '#fff' }}>
                     {selectedTicket.subject}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-                    Created {formatDate(selectedTicket.createdAt)}
                   </Typography>
                 </Box>
                 <Chip
@@ -674,41 +817,31 @@ const DashboardPage = () => {
                 )}
               </Box>
 
-              {/* Status Actions */}
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}>
-                  Update Status
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {['open', 'in-progress', 'resolved', 'closed'].map((status) => (
-                    <Button
-                      key={status}
-                      onClick={() => handleStatusChange(selectedTicket.id, status)}
-                      disabled={selectedTicket.status === status}
-                      size="small"
-                      sx={{
-                        background: selectedTicket.status === status 
-                          ? statusColors[status]?.bg 
-                          : 'rgba(255,255,255,0.05)',
-                        color: selectedTicket.status === status 
-                          ? statusColors[status]?.text 
-                          : 'rgba(255,255,255,0.5)',
-                        border: `1px solid ${selectedTicket.status === status 
-                          ? statusColors[status]?.border 
-                          : 'rgba(255,255,255,0.1)'}`,
-                        textTransform: 'capitalize',
-                        '&:hover': {
-                          background: statusColors[status]?.bg,
-                          color: statusColors[status]?.text,
-                          borderColor: statusColors[status]?.border,
-                        },
-                      }}
-                    >
-                      {status}
-                    </Button>
-                  ))}
+              {/* Close Ticket Action */}
+              {selectedTicket.status !== 'closed' && (
+                <Box sx={{ mt: 3 }}>
+                  <Button
+                    onClick={() => handleStatusChange(selectedTicket.id, 'closed')}
+                    size="small"
+                    variant="outlined"
+                    sx={{
+                      color: '#6b7280',
+                      borderColor: 'rgba(107,114,128,0.4)',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      '&:hover': {
+                        background: 'rgba(107,114,128,0.15)',
+                        borderColor: '#6b7280',
+                      },
+                    }}
+                  >
+                    Close Ticket
+                  </Button>
+                  <Typography variant="caption" sx={{ ml: 2, color: 'rgba(255,255,255,0.35)' }}>
+                    Our support agent will update progress
+                  </Typography>
                 </Box>
-              </Box>
+              )}
             </DialogContent>
             <DialogActions sx={{ p: 3, pt: 0 }}>
               <Button
