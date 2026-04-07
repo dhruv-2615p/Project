@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const AUTH_BASE_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8081';
+// In production (VM), use relative URL since Nginx proxies /api/* requests
+const AUTH_BASE_URL = process.env.REACT_APP_AUTH_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8081' : '');
 
 const authApi = axios.create({
   baseURL: AUTH_BASE_URL,

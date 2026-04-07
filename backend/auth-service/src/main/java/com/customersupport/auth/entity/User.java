@@ -29,6 +29,12 @@ public class User {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean emailVerified = false;
 
+    @Column
+    private String resetToken;
+
+    @Column
+    private LocalDateTime resetTokenExpiry;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

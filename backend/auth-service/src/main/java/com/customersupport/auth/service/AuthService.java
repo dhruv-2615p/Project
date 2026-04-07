@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -35,7 +37,13 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            User existingUser = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            if (existingUser.isEmailVerified()) {
+                throw new RuntimeException("Email already registered");
+            } else {
+                throw new RuntimeException("Email already registered but not verified. Please verify your email.");
+            }
         }
 
         User user = new User();
@@ -116,5 +124,42 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return new AuthResponse(token, user.getFullName(), user.getEmail());
+    }
+
+    public void forgotPassword(String email, String frontendUrl) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        String resetToken = UUID.randomUUID().toString();
+        user.setResetToken(resetToken);
+        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        String resetLink = frontendUrl + "/reset-password?token=" + resetToken;
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                emailService.sendResetPasswordEmail(email, resetLink);
+            } catch (Exception e) {
+                log.error("Failed to send reset password email to {}: {}", email, e.getMessage());
+            }
+        });
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired reset token"));
+
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            user.setResetToken(null);
+            user.setResetTokenExpiry(null);
+            userRepository.save(user);
+            throw new RuntimeException("Reset token has expired. Please request a new one.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        userRepository.save(user);
     }
 }

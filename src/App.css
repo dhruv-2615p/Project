@@ -489,7 +489,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
+  border-radius: 28px 28px 0 0;
   background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-blue), var(--accent-violet), var(--accent-pink), transparent);
   background-size: 200% 100%;
   animation: borderShimmer 3s linear infinite;
@@ -543,4 +544,367 @@ body {
 @media (max-width: 768px) {
   .ambient-orb { opacity: 0.5; }
   .float-shape { opacity: 0.5; }
+}
+
+/* ============ LANDING PAGE - INTERACTIVE 3D BLOBS ============ */
+
+.interactive-blobs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.mega-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.blob-1 {
+  width: 700px;
+  height: 700px;
+  top: -15%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(139, 92, 246, 0.3) 40%, transparent 70%);
+  animation: blobMorph1 20s ease-in-out infinite, blobFloat1 25s ease-in-out infinite;
+}
+
+.blob-2 {
+  width: 800px;
+  height: 800px;
+  bottom: -20%;
+  left: -15%;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, rgba(139, 92, 246, 0.25) 40%, transparent 70%);
+  animation: blobMorph2 25s ease-in-out infinite, blobFloat2 30s ease-in-out infinite;
+}
+
+.blob-3 {
+  width: 500px;
+  height: 500px;
+  top: 30%;
+  left: 50%;
+  margin-left: -250px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.45) 0%, rgba(16, 185, 129, 0.2) 40%, transparent 70%);
+  animation: blobMorph3 22s ease-in-out infinite, blobPulse 15s ease-in-out infinite;
+}
+
+.blob-4 {
+  width: 400px;
+  height: 400px;
+  top: 60%;
+  right: 10%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(239, 68, 68, 0.2) 40%, transparent 70%);
+  animation: blobMorph4 18s ease-in-out infinite, blobFloat3 20s ease-in-out infinite;
+}
+
+@keyframes blobMorph1 {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50% { border-radius: 50% 60% 30% 60% / 30% 40% 70% 60%; }
+  75% { border-radius: 60% 40% 60% 40% / 70% 30% 50% 60%; }
+}
+
+@keyframes blobMorph2 {
+  0%, 100% { border-radius: 40% 60% 60% 40% / 70% 30% 60% 40%; }
+  33% { border-radius: 60% 40% 30% 70% / 40% 60% 40% 60%; }
+  66% { border-radius: 30% 60% 70% 40% / 60% 40% 30% 70%; }
+}
+
+@keyframes blobMorph3 {
+  0%, 100% { border-radius: 50% 50% 50% 50%; }
+  25% { border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%; }
+  50% { border-radius: 40% 60% 40% 60% / 60% 40% 60% 40%; }
+  75% { border-radius: 55% 45% 55% 45% / 45% 55% 45% 55%; }
+}
+
+@keyframes blobMorph4 {
+  0%, 100% { border-radius: 70% 30% 50% 50% / 30% 70% 50% 50%; }
+  50% { border-radius: 30% 70% 50% 50% / 70% 30% 50% 50%; }
+}
+
+@keyframes blobFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-50px, 30px) scale(1.05); }
+  50% { transform: translate(-30px, -20px) scale(0.95); }
+  75% { transform: translate(20px, 40px) scale(1.02); }
+}
+
+@keyframes blobFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -40px) scale(1.08); }
+  66% { transform: translate(30px, 30px) scale(0.92); }
+}
+
+@keyframes blobFloat3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, -40px); }
+}
+
+@keyframes blobPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* ============ LANDING PAGE - FEATURE CARDS ============ */
+
+.feature-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.1), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.feature-card:hover::after {
+  opacity: 1;
+}
+
+/* ============ HERO BUTTON EFFECTS ============ */
+
+.hero-btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.hero-btn-primary:hover::before {
+  left: 100%;
+}
+
+/* ============ GLASSMORPHISM ENHANCEMENTS ============ */
+
+.glass-panel {
+  background: rgba(8, 8, 30, 0.6);
+  backdrop-filter: blur(40px) saturate(1.5);
+  -webkit-backdrop-filter: blur(40px) saturate(1.5);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+/* ============ TEXT GRADIENT ANIMATIONS ============ */
+
+.gradient-text-animated {
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 30%, #6366f1 50%, #06b6d4 70%, #ec4899 100%);
+  background-size: 300% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlow 8s ease infinite;
+}
+
+@keyframes gradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============ RESPONSIVE LANDING PAGE ============ */
+
+@media (max-width: 768px) {
+  .mega-blob {
+    filter: blur(40px);
+    opacity: 0.6;
+  }
+
+  .blob-1 { width: 400px; height: 400px; }
+  .blob-2 { width: 500px; height: 500px; }
+  .blob-3 { width: 300px; height: 300px; }
+  .blob-4 { width: 250px; height: 250px; }
+}
+
+@media (max-width: 480px) {
+  .mega-blob {
+    filter: blur(30px);
+    opacity: 0.5;
+  }
+
+  .blob-1 { width: 300px; height: 300px; }
+  .blob-2 { width: 350px; height: 350px; }
+  .blob-3 { width: 200px; height: 200px; }
+  .blob-4 { display: none; }
+}
+
+/* ============ AUTH PAGES - ENHANCED ANIMATIONS ============ */
+
+@keyframes authCardEntry {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9) rotateX(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Auth Page Floating Particles */
+.auth-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.auth-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  opacity: 0;
+  animation: authParticleFloat 15s ease-in-out infinite;
+}
+
+.auth-particle:nth-child(odd) {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+}
+
+.auth-particle:nth-child(3n) {
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+}
+
+.auth-particle:nth-child(5n) {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+@keyframes authParticleFloat {
+  0% {
+    bottom: -10px;
+    opacity: 0;
+    transform: translateX(0) scale(0.5);
+  }
+  10% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    bottom: 110%;
+    opacity: 0;
+    transform: translateX(50px) scale(1.5);
+  }
+}
+
+/* Enhanced Auth Card Glow */
+.auth-card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.5),
+    rgba(139, 92, 246, 0.4),
+    rgba(6, 182, 212, 0.4),
+    rgba(236, 72, 153, 0.35),
+    rgba(99, 102, 241, 0.5));
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+  z-index: -1;
+  filter: blur(20px);
+  opacity: 0.6;
+}
+
+/* Glowing Input Focus Effect */
+@keyframes inputGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+  }
+}
+
+/* Button Shine Effect */
+@keyframes buttonShine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+/* Smooth hover transitions for form elements */
+.MuiTextField-root {
+  transition: transform 0.3s ease;
+}
+
+.MuiTextField-root:focus-within {
+  transform: scale(1.01);
+}
+
+/* Enhanced scrollbar for auth pages */
+.auth-card-glow::-webkit-scrollbar {
+  width: 4px;
+}
+
+.auth-card-glow::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auth-card-glow::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
+}
+
+.auth-card-glow::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* Mobile optimizations for auth pages */
+@media (max-width: 480px) {
+  .auth-particles {
+    display: none;
+  }
+
+  .auth-card-glow::before {
+    filter: blur(15px);
+    opacity: 0.4;
+  }
 }
