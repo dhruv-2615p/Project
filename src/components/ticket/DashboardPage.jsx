@@ -652,12 +652,24 @@ const DashboardPage = () => {
                     </Tooltip>
                   </Box>
                   
-                  {ticket.aiResponse && (
-                    <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <SmartToyIcon sx={{ fontSize: 16, color: '#8b5cf6' }} />
-                      <Typography variant="caption" sx={{ color: '#8b5cf6' }}>
-                        AI Response Available
-                      </Typography>
+                  {(ticket.aiResponse || ticket.agentResponse) && (
+                    <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                      {ticket.aiResponse && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <SmartToyIcon sx={{ fontSize: 16, color: '#8b5cf6' }} />
+                          <Typography variant="caption" sx={{ color: '#8b5cf6' }}>
+                            AI Response
+                          </Typography>
+                        </Box>
+                      )}
+                      {ticket.agentResponse && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <SmartToyIcon sx={{ fontSize: 16, color: '#10b981' }} />
+                          <Typography variant="caption" sx={{ color: '#10b981' }}>
+                            Agent Response
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
                   )}
                 </CardContent>
@@ -816,6 +828,49 @@ const DashboardPage = () => {
                   </Typography>
                 )}
               </Box>
+
+              {/* Agent Response Section */}
+              {selectedTicket.agentResponse && (
+                <>
+                  <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{
+                      width: 28, height: 28, borderRadius: '8px',
+                      background: 'linear-gradient(135deg, #10b981, #059669)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Typography sx={{ fontSize: 14 }}>🛡️</Typography>
+                    </Box>
+                    <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      Support Agent Response
+                    </Typography>
+                    {selectedTicket.assignedAgentName && (
+                      <Chip
+                        label={selectedTicket.assignedAgentName}
+                        size="small"
+                        sx={{
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          color: '#10b981',
+                          border: '1px solid rgba(16, 185, 129, 0.3)',
+                          fontSize: '0.7rem',
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Box
+                    sx={{
+                      p: 3,
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      mb: 3,
+                    }}
+                  >
+                    <Typography sx={{ color: 'rgba(255,255,255,0.9)', whiteSpace: 'pre-wrap' }}>
+                      {selectedTicket.agentResponse}
+                    </Typography>
+                  </Box>
+                </>
+              )}
 
               {/* Close Ticket Action */}
               {selectedTicket.status !== 'closed' && (

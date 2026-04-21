@@ -41,6 +41,7 @@ function createProxy(port) {
 // Proxy API requests to backend services
 app.use('/api/auth', createProxy(AUTH_PORT));
 app.use('/api/tickets', createProxy(AUTH_PORT));
+app.use('/api/agent', createProxy(AUTH_PORT));
 app.use('/api/admin', createProxy(AUTH_PORT));
 app.use('/api/ai', createProxy(AI_PORT));
 app.use('/health', createProxy(AI_PORT));

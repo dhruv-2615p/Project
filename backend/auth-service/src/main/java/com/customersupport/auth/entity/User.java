@@ -29,6 +29,9 @@ public class User {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean emailVerified = false;
 
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'CUSTOMER'")
+    private String role = "CUSTOMER";
+
     @Column
     private String resetToken;
 

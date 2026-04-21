@@ -49,4 +49,24 @@ public class AdminController {
         userRepository.findByEmail(email).ifPresent(userRepository::delete);
         return ResponseEntity.ok(Map.of("message", "User deleted: " + email));
     }
+
+    @PutMapping("/users/{email}/role")
+    public ResponseEntity<?> updateUserRole(@PathVariable String email,
+                                            @RequestHeader("X-Admin-Key") String key,
+                                            @RequestBody Map<String, String> request) {
+        if (!ADMIN_KEY.equals(key)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
+        }
+        String role = request.get("role");
+        if (role == null || role.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Role is required"));
+        }
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    user.setRole(role.toUpperCase());
+                    userRepository.save(user);
+                    return ResponseEntity.ok(Map.of("message", "User " + email + " role updated to " + role.toUpperCase()));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

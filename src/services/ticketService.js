@@ -58,6 +58,27 @@ const ticketService = {
     const response = await ticketApi.get('/api/tickets/dashboard');
     return response.data;
   },
+
+  // Agent-specific methods
+  getAgentTickets: async () => {
+    const response = await ticketApi.get('/api/agent/tickets');
+    return response.data;
+  },
+
+  sendAgentResponse: async (ticketId, responseText) => {
+    const response = await ticketApi.post(`/api/agent/tickets/${ticketId}/respond`, { response: responseText });
+    return response.data;
+  },
+
+  assignTicketToAgent: async (ticketId) => {
+    const response = await ticketApi.post(`/api/agent/tickets/${ticketId}/assign`);
+    return response.data;
+  },
+
+  updateAgentTicketStatus: async (ticketId, status) => {
+    const response = await ticketApi.put(`/api/agent/tickets/${ticketId}/status`, { status });
+    return response.data;
+  },
 };
 
 export default ticketService;

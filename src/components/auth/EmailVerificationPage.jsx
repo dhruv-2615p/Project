@@ -3,10 +3,6 @@ import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert, CircularProgress, IconButton } from '@mui/material';
 import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import SecurityIcon from '@mui/icons-material/Security';
-import ShieldIcon from '@mui/icons-material/Shield';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import authService from '../../services/authService';
 
 const EmailVerificationPage = () => {
@@ -71,12 +67,6 @@ const EmailVerificationPage = () => {
     }
   };
 
-  const features = [
-    { icon: <VerifiedUserIcon sx={{ fontSize: 28 }} />, title: 'Identity Verification', desc: 'Confirm your email to activate your account' },
-    { icon: <SecurityIcon sx={{ fontSize: 28 }} />, title: 'Account Protection', desc: 'OTP verification adds an extra layer of security' },
-    { icon: <ShieldIcon sx={{ fontSize: 28 }} />, title: 'Secure Access', desc: 'Verified accounts get full access to all features' },
-  ];
-
   return (
     <Box sx={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Box className="interactive-blobs">
@@ -95,85 +85,58 @@ const EmailVerificationPage = () => {
         <ArrowBackIcon />
       </IconButton>
 
-      <Box sx={{ display: 'flex', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        {/* Left - Branding Panel */}
-        <Box sx={{ flex: 1, display: { xs: 'none', md: 'flex' }, flexDirection: 'column', justifyContent: 'center', px: { md: 6, lg: 8 } }}>
-          <Box sx={{ maxWidth: 480 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-              <Box sx={{ width: 56, height: 56, borderRadius: '18px', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 40px rgba(6, 182, 212, 0.5)', animation: 'pulseGlow 3s ease-in-out infinite' }}>
-                <SupportAgentIcon sx={{ color: '#fff', fontSize: 28 }} />
-              </Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #fff, #67e8f9)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>DRP AI</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', position: 'relative', zIndex: 1, px: { xs: 2, md: 4 }, py: 4 }}>
+        <Box
+          component="form" onSubmit={handleVerify}
+          sx={{
+            width: '100%', maxWidth: 460, p: { xs: 3, md: 5 }, borderRadius: '28px',
+            background: 'rgba(8, 8, 30, 0.8)', backdropFilter: 'blur(60px) saturate(1.6)',
+            border: '1px solid rgba(6, 182, 212, 0.2)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.7), 0 0 60px rgba(6, 182, 212, 0.1)',
+            animation: 'authCardEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative',
+            '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '3px', borderRadius: '28px 28px 0 0', background: 'linear-gradient(90deg, #06b6d4, #8b5cf6, #6366f1, #ec4899, #10b981)', backgroundSize: '200% 100%', animation: 'borderShimmer 4s linear infinite' },
+          }}
+        >
+          <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '20px', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6, #6366f1)', mb: 2, boxShadow: '0 10px 40px rgba(6, 182, 212, 0.4)', animation: 'float3D 4s ease-in-out infinite' }}>
+              <MarkEmailReadOutlinedIcon sx={{ fontSize: 30, color: '#fff' }} />
             </Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, lineHeight: 1.1, mb: 2, background: 'linear-gradient(135deg, #fff 0%, #e2e8f0 40%, #67e8f9 80%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Almost There! Verify Your Email</Typography>
-            <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 400, mb: 5, lineHeight: 1.6 }}>One last step to unlock AI-powered customer support.</Typography>
-
-            {features.map((f, i) => (
-              <Box key={i} sx={{ display: 'flex', gap: 2, mb: 3, p: 2, borderRadius: '16px', background: 'rgba(6, 182, 212, 0.06)', border: '1px solid rgba(6, 182, 212, 0.12)', transition: 'all 0.3s', '&:hover': { background: 'rgba(6, 182, 212, 0.1)', borderColor: 'rgba(6, 182, 212, 0.25)', transform: 'translateX(6px)' } }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: '14px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(139, 92, 246, 0.15))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#67e8f9', flexShrink: 0 }}>{f.icon}</Box>
-                <Box>
-                  <Typography variant="body1" sx={{ fontWeight: 700, color: '#fff', mb: 0.3 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</Typography>
-                </Box>
-              </Box>
-            ))}
+            <Typography variant="h5" sx={{ fontWeight: 800, color: '#fff', mb: 0.5 }}>Verify Your Email</Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>We sent a 6-digit OTP to</Typography>
+            <Typography variant="body2" sx={{ color: '#67e8f9', fontWeight: 600, mt: 0.3 }}>{email}</Typography>
           </Box>
-        </Box>
 
-        {/* Right - Form Panel */}
-        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', px: { xs: 2, md: 6 }, py: 4 }}>
-          <Box
-            component="form" onSubmit={handleVerify}
+          {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '14px', bgcolor: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)', animation: 'shake 0.5s ease-out' }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '14px', bgcolor: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981' }}>{success}</Alert>}
+
+          <TextField
+            fullWidth label="Enter OTP" value={otp}
+            onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 6); setOtp(val); }}
+            required
+            inputProps={{ maxLength: 6, inputMode: 'numeric', style: { textAlign: 'center', letterSpacing: '0.5em', fontSize: '1.3rem', fontWeight: 700 } }}
             sx={{
-              width: '100%', maxWidth: 460, p: { xs: 3, md: 5 }, borderRadius: '28px',
-              background: 'rgba(8, 8, 30, 0.8)', backdropFilter: 'blur(60px) saturate(1.6)',
-              border: '1px solid rgba(6, 182, 212, 0.2)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.7), 0 0 60px rgba(6, 182, 212, 0.1)',
-              animation: 'authCardEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative',
-              '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '3px', borderRadius: '28px 28px 0 0', background: 'linear-gradient(90deg, #06b6d4, #8b5cf6, #6366f1, #ec4899, #10b981)', backgroundSize: '200% 100%', animation: 'borderShimmer 4s linear infinite' },
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '14px', bgcolor: 'rgba(6, 182, 212, 0.05)', transition: 'all 0.3s ease',
+                '& fieldset': { borderColor: 'rgba(6, 182, 212, 0.25)', borderWidth: '2px' },
+                '&:hover fieldset': { borderColor: 'rgba(6, 182, 212, 0.5)' },
+                '&.Mui-focused fieldset': { borderColor: '#06b6d4', boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.5)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#67e8f9' },
+              '& .MuiInputBase-input': { color: '#fff' },
             }}
-          >
-            <Box sx={{ textAlign: 'center', mb: 3.5 }}>
-              <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '20px', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6, #6366f1)', mb: 2, boxShadow: '0 10px 40px rgba(6, 182, 212, 0.4)', animation: 'float3D 4s ease-in-out infinite' }}>
-                <MarkEmailReadOutlinedIcon sx={{ fontSize: 30, color: '#fff' }} />
-              </Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#fff', mb: 0.5 }}>Verify Your Email</Typography>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>We sent a 6-digit OTP to</Typography>
-              <Typography variant="body2" sx={{ color: '#67e8f9', fontWeight: 600, mt: 0.3 }}>{email}</Typography>
+          />
+
+          <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ py: 1.8, borderRadius: '14px', fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6, #6366f1)', backgroundSize: '200% auto', boxShadow: '0 8px 30px rgba(6, 182, 212, 0.4)', '&:hover': { backgroundPosition: 'right center', boxShadow: '0 12px 40px rgba(6, 182, 212, 0.5)', transform: 'translateY(-2px)' }, '&:disabled': { background: 'rgba(6, 182, 212, 0.3)' } }}>
+            {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Verify Email'}
+          </Button>
+
+          <Typography variant="body2" sx={{ textAlign: 'center', mt: 3, color: 'rgba(255,255,255,0.45)' }}>
+            Didn't receive the code?{' '}
+            <Box component="span" onClick={!resending ? handleResend : undefined} sx={{ color: '#67e8f9', fontWeight: 600, cursor: resending ? 'default' : 'pointer', opacity: resending ? 0.5 : 1, '&:hover': resending ? {} : { textDecoration: 'underline' } }}>
+              {resending ? 'Sending...' : 'Resend OTP'}
             </Box>
-
-            {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '14px', bgcolor: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)', animation: 'shake 0.5s ease-out' }}>{error}</Alert>}
-            {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '14px', bgcolor: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981' }}>{success}</Alert>}
-
-            <TextField
-              fullWidth label="Enter OTP" value={otp}
-              onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 6); setOtp(val); }}
-              required
-              inputProps={{ maxLength: 6, inputMode: 'numeric', style: { textAlign: 'center', letterSpacing: '0.5em', fontSize: '1.3rem', fontWeight: 700 } }}
-              sx={{
-                mb: 3,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '14px', bgcolor: 'rgba(6, 182, 212, 0.05)', transition: 'all 0.3s ease',
-                  '& fieldset': { borderColor: 'rgba(6, 182, 212, 0.25)', borderWidth: '2px' },
-                  '&:hover fieldset': { borderColor: 'rgba(6, 182, 212, 0.5)' },
-                  '&.Mui-focused fieldset': { borderColor: '#06b6d4', boxShadow: '0 0 20px rgba(6, 182, 212, 0.3)' },
-                },
-                '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.5)' },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#67e8f9' },
-                '& .MuiInputBase-input': { color: '#fff' },
-              }}
-            />
-
-            <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ py: 1.8, borderRadius: '14px', fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #06b6d4, #8b5cf6, #6366f1)', backgroundSize: '200% auto', boxShadow: '0 8px 30px rgba(6, 182, 212, 0.4)', '&:hover': { backgroundPosition: 'right center', boxShadow: '0 12px 40px rgba(6, 182, 212, 0.5)', transform: 'translateY(-2px)' }, '&:disabled': { background: 'rgba(6, 182, 212, 0.3)' } }}>
-              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Verify Email'}
-            </Button>
-
-            <Typography variant="body2" sx={{ textAlign: 'center', mt: 3, color: 'rgba(255,255,255,0.45)' }}>
-              Didn't receive the code?{' '}
-              <Box component="span" onClick={!resending ? handleResend : undefined} sx={{ color: '#67e8f9', fontWeight: 600, cursor: resending ? 'default' : 'pointer', opacity: resending ? 0.5 : 1, '&:hover': resending ? {} : { textDecoration: 'underline' } }}>
-                {resending ? 'Sending...' : 'Resend OTP'}
-              </Box>
-            </Typography>
-          </Box>
+          </Typography>
         </Box>
       </Box>
     </Box>
