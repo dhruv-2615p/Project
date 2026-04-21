@@ -63,7 +63,7 @@ public class AuthService {
             }
         });
 
-        return new AuthResponse(null, user.getFullName(), user.getEmail());
+        return new AuthResponse(null, user.getFullName(), user.getEmail(), user.getRole());
     }
 
     public void sendOtpToEmail(String email) {
@@ -113,7 +113,7 @@ public class AuthService {
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getFullName(), user.getEmail());
+        return new AuthResponse(token, user.getFullName(), user.getEmail(), user.getRole());
     }
 
     public AuthResponse validateToken(String token) {
@@ -123,7 +123,7 @@ public class AuthService {
         String email = jwtUtil.extractEmail(token);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new AuthResponse(token, user.getFullName(), user.getEmail());
+        return new AuthResponse(token, user.getFullName(), user.getEmail(), user.getRole());
     }
 
     public void forgotPassword(String email, String frontendUrl) {

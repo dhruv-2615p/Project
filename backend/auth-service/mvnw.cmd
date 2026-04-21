@@ -17,9 +17,12 @@ IF NOT EXIST %WRAPPER_JAR% (
     powershell -Command "(New-Object Net.WebClient).DownloadFile('https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar', '%~dp0.mvn\wrapper\maven-wrapper.jar')"
 )
 
+SET MAVEN_PROJECTBASEDIR=%~dp0
+IF "%MAVEN_PROJECTBASEDIR:~-1%"=="\" SET MAVEN_PROJECTBASEDIR=%MAVEN_PROJECTBASEDIR:~0,-1%
+
 %JAVA_EXE% ^
   %MAVEN_OPTS% ^
-  "-Dmaven.multiModuleProjectDirectory=%~dp0" ^
+  "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR%" ^
   -classpath %WRAPPER_JAR% ^
   org.apache.maven.wrapper.MavenWrapperMain %*
 

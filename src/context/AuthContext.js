@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       authService.validate(token)
         .then((data) => {
-          setUser({ fullName: data.fullName, email: data.email });
+          setUser({ fullName: data.fullName, email: data.email, role: data.role || 'CUSTOMER' });
         })
         .catch(() => {
           authService.logout();
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const data = await authService.login(email, password);
     authService.saveAuth(data);
-    setUser({ fullName: data.fullName, email: data.email });
+    setUser({ fullName: data.fullName, email: data.email, role: data.role || 'CUSTOMER' });
     return data;
   };
 

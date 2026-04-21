@@ -7,10 +7,6 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import EnhancedEncryptionIcon from '@mui/icons-material/EnhancedEncryption';
-import GppGoodIcon from '@mui/icons-material/GppGood';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import axios from 'axios';
 
 const AUTH_BASE_URL = process.env.REACT_APP_AUTH_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8081' : '');
@@ -79,12 +75,6 @@ const ResetPasswordPage = () => {
     '& .MuiInputBase-input': { color: '#fff', py: 1.6 },
   };
 
-  const features = [
-    { icon: <EnhancedEncryptionIcon sx={{ fontSize: 28 }} />, title: 'Strong Encryption', desc: 'Your new password is hashed with BCrypt' },
-    { icon: <GppGoodIcon sx={{ fontSize: 28 }} />, title: 'Password Rules', desc: 'Smart validation ensures a strong password' },
-    { icon: <AdminPanelSettingsIcon sx={{ fontSize: 28 }} />, title: 'Account Security', desc: 'All active sessions are protected after reset' },
-  ];
-
   if (!token) {
     return (
       <Box sx={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
@@ -121,106 +111,79 @@ const ResetPasswordPage = () => {
         <ArrowBackIcon />
       </IconButton>
 
-      <Box sx={{ display: 'flex', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-        {/* Left - Branding Panel */}
-        <Box sx={{ flex: 1, display: { xs: 'none', md: 'flex' }, flexDirection: 'column', justifyContent: 'center', px: { md: 6, lg: 8 } }}>
-          <Box sx={{ maxWidth: 480 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-              <Box sx={{ width: 56, height: 56, borderRadius: '18px', background: 'linear-gradient(135deg, #10b981, #06b6d4, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 40px rgba(16, 185, 129, 0.5)', animation: 'pulseGlow 3s ease-in-out infinite' }}>
-                <SupportAgentIcon sx={{ color: '#fff', fontSize: 28 }} />
-              </Box>
-              <Typography variant="h6" sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #fff, #34d399)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>DRP AI</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', position: 'relative', zIndex: 1, px: { xs: 2, md: 4 }, py: 4 }}>
+        <Box
+          component="form" onSubmit={handleSubmit}
+          sx={{
+            width: '100%', maxWidth: 460, p: { xs: 3, md: 5 }, borderRadius: '28px',
+            background: 'rgba(8, 8, 30, 0.8)', backdropFilter: 'blur(60px) saturate(1.6)',
+            border: '1px solid rgba(16, 185, 129, 0.2)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.7), 0 0 60px rgba(16, 185, 129, 0.1)',
+            animation: 'authCardEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative',
+            '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '3px', borderRadius: '28px 28px 0 0', background: 'linear-gradient(90deg, #10b981, #06b6d4, #6366f1, #8b5cf6)', backgroundSize: '200% 100%', animation: 'borderShimmer 4s linear infinite' },
+          }}
+        >
+          <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '20px', background: 'linear-gradient(135deg, #10b981, #06b6d4, #6366f1)', mb: 2, boxShadow: '0 10px 40px rgba(16, 185, 129, 0.4)', animation: 'float3D 4s ease-in-out infinite' }}>
+              <LockOutlinedIcon sx={{ fontSize: 30, color: '#fff' }} />
             </Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, lineHeight: 1.1, mb: 2, background: 'linear-gradient(135deg, #fff 0%, #e2e8f0 40%, #34d399 80%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Create Your New Password</Typography>
-            <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 400, mb: 5, lineHeight: 1.6 }}>Choose a strong password to keep your account secure.</Typography>
-
-            {features.map((f, i) => (
-              <Box key={i} sx={{ display: 'flex', gap: 2, mb: 3, p: 2, borderRadius: '16px', background: 'rgba(16, 185, 129, 0.06)', border: '1px solid rgba(16, 185, 129, 0.12)', transition: 'all 0.3s', '&:hover': { background: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.25)', transform: 'translateX(6px)' } }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: '14px', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.15))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#34d399', flexShrink: 0 }}>{f.icon}</Box>
-                <Box>
-                  <Typography variant="body1" sx={{ fontWeight: 700, color: '#fff', mb: 0.3 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</Typography>
-                </Box>
-              </Box>
-            ))}
+            <Typography variant="h5" sx={{ fontWeight: 800, color: '#fff', mb: 0.5 }}>Create New Password</Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>Enter your new password below</Typography>
           </Box>
-        </Box>
 
-        {/* Right - Form Panel */}
-        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', px: { xs: 2, md: 6 }, py: 4 }}>
-          <Box
-            component="form" onSubmit={handleSubmit}
-            sx={{
-              width: '100%', maxWidth: 460, p: { xs: 3, md: 5 }, borderRadius: '28px',
-              background: 'rgba(8, 8, 30, 0.8)', backdropFilter: 'blur(60px) saturate(1.6)',
-              border: '1px solid rgba(16, 185, 129, 0.2)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.7), 0 0 60px rgba(16, 185, 129, 0.1)',
-              animation: 'authCardEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative',
-              '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '3px', borderRadius: '28px 28px 0 0', background: 'linear-gradient(90deg, #10b981, #06b6d4, #6366f1, #8b5cf6)', backgroundSize: '200% 100%', animation: 'borderShimmer 4s linear infinite' },
-            }}
-          >
-            <Box sx={{ textAlign: 'center', mb: 3.5 }}>
-              <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: '20px', background: 'linear-gradient(135deg, #10b981, #06b6d4, #6366f1)', mb: 2, boxShadow: '0 10px 40px rgba(16, 185, 129, 0.4)', animation: 'float3D 4s ease-in-out infinite' }}>
-                <LockOutlinedIcon sx={{ fontSize: 30, color: '#fff' }} />
-              </Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#fff', mb: 0.5 }}>Create New Password</Typography>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>Enter your new password below</Typography>
+          {success ? (
+            <Box sx={{ textAlign: 'center' }}>
+              <Alert icon={<CheckCircleOutlineIcon sx={{ fontSize: 24 }} />} severity="success" sx={{ mb: 3, borderRadius: '14px', bgcolor: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981' }}>
+                Password reset successful! You can now sign in with your new password.
+              </Alert>
+              <Button onClick={() => navigate('/login')} variant="contained" sx={{ px: 4, py: 1.5, borderRadius: '14px', fontWeight: 700, background: 'linear-gradient(135deg, #10b981, #06b6d4)', boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4)', '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 12px 40px rgba(16, 185, 129, 0.5)' } }}>Go to Login</Button>
             </Box>
+          ) : (
+            <>
+              {error && <Alert severity="error" sx={{ mb: 2.5, borderRadius: '14px', bgcolor: 'rgba(244, 63, 94, 0.1)', border: '1px solid rgba(244, 63, 94, 0.3)', animation: 'shake 0.5s ease-out' }}>{error}</Alert>}
 
-            {success ? (
-              <Box sx={{ textAlign: 'center' }}>
-                <Alert icon={<CheckCircleOutlineIcon sx={{ fontSize: 24 }} />} severity="success" sx={{ mb: 3, borderRadius: '14px', bgcolor: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981' }}>
-                  Password reset successful! You can now sign in with your new password.
-                </Alert>
-                <Button onClick={() => navigate('/login')} variant="contained" sx={{ px: 4, py: 1.5, borderRadius: '14px', fontWeight: 700, background: 'linear-gradient(135deg, #10b981, #06b6d4)', boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4)', '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 12px 40px rgba(16, 185, 129, 0.5)' } }}>Go to Login</Button>
-              </Box>
-            ) : (
-              <>
-                {error && <Alert severity="error" sx={{ mb: 2.5, borderRadius: '14px', bgcolor: 'rgba(244, 63, 94, 0.1)', border: '1px solid rgba(244, 63, 94, 0.3)', animation: 'shake 0.5s ease-out' }}>{error}</Alert>}
+              <TextField
+                fullWidth label="New Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required
+                InputProps={{ endAdornment: <IconButton onClick={() => setShowPassword(!showPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#10b981' } }}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }}
+                sx={inputSx}
+              />
 
-                <TextField
-                  fullWidth label="New Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required
-                  InputProps={{ endAdornment: <IconButton onClick={() => setShowPassword(!showPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#10b981' } }}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }}
-                  sx={inputSx}
-                />
+              {password && (
+                <Box sx={{ mb: 2, pl: 1 }}>
+                  {passwordRules.map((rule, i) => {
+                    const passed = rule.test(password);
+                    return (
+                      <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 0.3 }}>
+                        {passed ? <CheckCircleOutlineIcon sx={{ fontSize: 16, color: '#10b981' }} /> : <CancelOutlinedIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.25)' }} />}
+                        <Typography variant="caption" sx={{ color: passed ? '#10b981' : 'rgba(255,255,255,0.35)', fontSize: '0.72rem' }}>{rule.label}</Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
 
-                {password && (
-                  <Box sx={{ mb: 2, pl: 1 }}>
-                    {passwordRules.map((rule, i) => {
-                      const passed = rule.test(password);
-                      return (
-                        <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 0.3 }}>
-                          {passed ? <CheckCircleOutlineIcon sx={{ fontSize: 16, color: '#10b981' }} /> : <CancelOutlinedIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.25)' }} />}
-                          <Typography variant="caption" sx={{ color: passed ? '#10b981' : 'rgba(255,255,255,0.35)', fontSize: '0.72rem' }}>{rule.label}</Typography>
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                )}
+              <TextField
+                fullWidth label="Confirm Password" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required
+                InputProps={{ endAdornment: <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#10b981' } }}>{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }}
+                sx={{ ...inputSx, mb: 1 }}
+              />
 
-                <TextField
-                  fullWidth label="Confirm Password" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required
-                  InputProps={{ endAdornment: <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#10b981' } }}>{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</IconButton> }}
-                  sx={{ ...inputSx, mb: 1 }}
-                />
+              {confirmPassword && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, pl: 1, mb: 3 }}>
+                  {passwordsMatch ? <CheckCircleOutlineIcon sx={{ fontSize: 16, color: '#10b981' }} /> : <CancelOutlinedIcon sx={{ fontSize: 16, color: '#f43f5e' }} />}
+                  <Typography variant="caption" sx={{ color: passwordsMatch ? '#10b981' : '#f43f5e', fontSize: '0.72rem' }}>{passwordsMatch ? 'Passwords match' : 'Passwords do not match'}</Typography>
+                </Box>
+              )}
 
-                {confirmPassword && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, pl: 1, mb: 3 }}>
-                    {passwordsMatch ? <CheckCircleOutlineIcon sx={{ fontSize: 16, color: '#10b981' }} /> : <CancelOutlinedIcon sx={{ fontSize: 16, color: '#f43f5e' }} />}
-                    <Typography variant="caption" sx={{ color: passwordsMatch ? '#10b981' : '#f43f5e', fontSize: '0.72rem' }}>{passwordsMatch ? 'Passwords match' : 'Passwords do not match'}</Typography>
-                  </Box>
-                )}
+              <Button type="submit" fullWidth variant="contained" disabled={loading || !allPasswordRulesMet || !passwordsMatch} sx={{ py: 1.8, borderRadius: '14px', fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #10b981, #06b6d4, #6366f1)', backgroundSize: '200% auto', boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4)', '&:hover': { backgroundPosition: 'right center', boxShadow: '0 12px 40px rgba(16, 185, 129, 0.5)', transform: 'translateY(-2px)' }, '&:disabled': { background: 'rgba(16, 185, 129, 0.3)' } }}>
+                {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Reset Password'}
+              </Button>
+            </>
+          )}
 
-                <Button type="submit" fullWidth variant="contained" disabled={loading || !allPasswordRulesMet || !passwordsMatch} sx={{ py: 1.8, borderRadius: '14px', fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #10b981, #06b6d4, #6366f1)', backgroundSize: '200% auto', boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4)', '&:hover': { backgroundPosition: 'right center', boxShadow: '0 12px 40px rgba(16, 185, 129, 0.5)', transform: 'translateY(-2px)' }, '&:disabled': { background: 'rgba(16, 185, 129, 0.3)' } }}>
-                  {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Reset Password'}
-                </Button>
-              </>
-            )}
-
-            <Box sx={{ textAlign: 'center', mt: 3 }}>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>
-                <Link to="/login" style={{ textDecoration: 'none', fontWeight: 700, background: 'linear-gradient(90deg, #10b981, #06b6d4)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Back to Login</Link>
-              </Typography>
-            </Box>
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>
+              <Link to="/login" style={{ textDecoration: 'none', fontWeight: 700, background: 'linear-gradient(90deg, #10b981, #06b6d4)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Back to Login</Link>
+            </Typography>
           </Box>
         </Box>
       </Box>

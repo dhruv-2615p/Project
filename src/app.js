@@ -11,6 +11,7 @@ import ResetPasswordPage from './components/auth/ResetPasswordPage';
 import LandingPage from './components/landing/LandingPage';
 import TicketPage from './components/ticket/TicketPage';
 import DashboardPage from './components/ticket/DashboardPage';
+import AgentDashboard from './components/agent/AgentDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
@@ -108,23 +109,33 @@ function AppContent() {
 
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/" element={user?.role === 'AGENT' ? <Navigate to="/agent-dashboard" /> : <LandingPage />} />
+        <Route path="/landing" element={user?.role === 'AGENT' ? <Navigate to="/agent-dashboard" /> : <LandingPage />} />
         <Route path="/ticket" element={<TicketPage />} />
 
-        {/* Auth Routes - redirect to landing if logged in */}
-        <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
-        <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
-        <Route path="/verify-email" element={user ? <Navigate to="/" /> : <EmailVerificationPage />} />
-        <Route path="/forgot-password" element={user ? <Navigate to="/" /> : <ForgotPasswordPage />} />
-        <Route path="/reset-password" element={user ? <Navigate to="/" /> : <ResetPasswordPage />} />
+        {/* Auth Routes - redirect to appropriate dashboard if logged in */}
+        <Route path="/login" element={user ? <Navigate to={user.role === 'AGENT' ? '/agent-dashboard' : '/'} /> : <LoginPage />} />
+        <Route path="/register" element={user ? <Navigate to={user.role === 'AGENT' ? '/agent-dashboard' : '/'} /> : <RegisterPage />} />
+        <Route path="/verify-email" element={user ? <Navigate to={user.role === 'AGENT' ? '/agent-dashboard' : '/'} /> : <EmailVerificationPage />} />
+        <Route path="/forgot-password" element={user ? <Navigate to={user.role === 'AGENT' ? '/agent-dashboard' : '/'} /> : <ForgotPasswordPage />} />
+        <Route path="/reset-password" element={user ? <Navigate to={user.role === 'AGENT' ? '/agent-dashboard' : '/'} /> : <ResetPasswordPage />} />
 
-        {/* Protected Dashboard Route */}
+        {/* Protected Dashboard Route - agents go to agent dashboard */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              {user?.role === 'AGENT' ? <Navigate to="/agent-dashboard" /> : <DashboardPage />}
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Agent Dashboard Route */}
+        <Route
+          path="/agent-dashboard"
+          element={
+            <ProtectedRoute>
+              <AgentDashboard />
             </ProtectedRoute>
           }
         />
@@ -134,6 +145,7 @@ function AppContent() {
           path="/chat"
           element={
             <ProtectedRoute>
+              {user?.role === 'AGENT' ? <Navigate to="/agent-dashboard" /> : (
               <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, py: 3, px: { xs: 1.5, md: 3 } }}>
                 {/* Header */}
                 <Box sx={{ textAlign: 'center', mb: 3, position: 'relative' }}>
@@ -244,6 +256,7 @@ function AppContent() {
                   </Typography>
                 </Box>
               </Container>
+              )}
             </ProtectedRoute>
           }
         />

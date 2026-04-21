@@ -14,6 +14,9 @@ public class TicketResponse {
     private String description;
     private String status;
     private String aiResponse;
+    private String agentResponse;
+    private Long assignedAgentId;
+    private String assignedAgentName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime resolvedAt;
@@ -30,6 +33,8 @@ public class TicketResponse {
         this.description = ticket.getDescription();
         this.status = ticket.getStatus();
         this.aiResponse = ticket.getAiResponse();
+        this.agentResponse = ticket.getAgentResponse();
+        this.assignedAgentId = ticket.getAssignedAgentId();
         this.createdAt = ticket.getCreatedAt();
         this.updatedAt = ticket.getUpdatedAt();
         this.resolvedAt = ticket.getResolvedAt();
@@ -70,6 +75,22 @@ public class TicketResponse {
 
     public String getAiResponse() {
         return aiResponse;
+    }
+
+    public String getAgentResponse() {
+        return agentResponse;
+    }
+
+    public Long getAssignedAgentId() {
+        return assignedAgentId;
+    }
+
+    public String getAssignedAgentName() {
+        return assignedAgentName;
+    }
+
+    public void setAssignedAgentName(String assignedAgentName) {
+        this.assignedAgentName = assignedAgentName;
     }
 
     public LocalDateTime getCreatedAt() {

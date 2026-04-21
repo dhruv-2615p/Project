@@ -33,6 +33,12 @@ public class Ticket {
     @Column(columnDefinition = "TEXT")
     private String aiResponse;
 
+    @Column(columnDefinition = "TEXT")
+    private String agentResponse;
+
+    @Column(name = "assigned_agent_id")
+    private Long assignedAgentId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -119,6 +125,22 @@ public class Ticket {
 
     public void setAiResponse(String aiResponse) {
         this.aiResponse = aiResponse;
+    }
+
+    public String getAgentResponse() {
+        return agentResponse;
+    }
+
+    public void setAgentResponse(String agentResponse) {
+        this.agentResponse = agentResponse;
+    }
+
+    public Long getAssignedAgentId() {
+        return assignedAgentId;
+    }
+
+    public void setAssignedAgentId(Long assignedAgentId) {
+        this.assignedAgentId = assignedAgentId;
     }
 
     public LocalDateTime getCreatedAt() {

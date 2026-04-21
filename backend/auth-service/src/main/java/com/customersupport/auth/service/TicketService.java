@@ -142,4 +142,73 @@ public class TicketService {
                 .map(TicketResponse::new)
                 .collect(Collectors.toList());
     }
+
+    // Agent methods
+    public List<TicketResponse> getAllOpenTickets() {
+        List<String> statuses = List.of("open", "in-progress", "resolved");
+        return ticketRepository.findByStatusInOrderByCreatedAtDesc(statuses)
+                .stream()
+                .map(this::buildTicketResponseWithAgentName)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public TicketResponse addAgentResponse(Long ticketId, String agentEmail, String response) {
+        User agent = userRepository.findByEmail(agentEmail)
+                .orElseThrow(() -> new RuntimeException("Agent not found"));
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticket.setAgentResponse(response);
+        if (ticket.getAssignedAgentId() == null) {
+            ticket.setAssignedAgentId(agent.getId());
+        }
+        if ("open".equals(ticket.getStatus())) {
+            ticket.setStatus("in-progress");
+        }
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        log.info("Agent {} responded to ticket {}", agentEmail, ticketId);
+
+        return buildTicketResponseWithAgentName(updatedTicket);
+    }
+
+    @Transactional
+    public TicketResponse assignTicket(Long ticketId, String agentEmail) {
+        User agent = userRepository.findByEmail(agentEmail)
+                .orElseThrow(() -> new RuntimeException("Agent not found"));
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticket.setAssignedAgentId(agent.getId());
+        if ("open".equals(ticket.getStatus())) {
+            ticket.setStatus("in-progress");
+        }
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        log.info("Ticket {} assigned to agent {}", ticketId, agentEmail);
+
+        return buildTicketResponseWithAgentName(updatedTicket);
+    }
+
+    @Transactional
+    public TicketResponse updateTicketStatusByAgent(Long ticketId, String status) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticket.setStatus(status);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        log.info("Ticket {} status updated to {} by agent", ticketId, status);
+
+        return buildTicketResponseWithAgentName(updatedTicket);
+    }
+
+    private TicketResponse buildTicketResponseWithAgentName(Ticket ticket) {
+        TicketResponse response = new TicketResponse(ticket);
+        if (ticket.getAssignedAgentId() != null) {
+            userRepository.findById(ticket.getAssignedAgentId())
+                    .ifPresent(agent -> response.setAssignedAgentName(agent.getFullName()));
+        }
+        return response;
+    }
 }
